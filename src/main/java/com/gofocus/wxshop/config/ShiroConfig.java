@@ -4,6 +4,7 @@ import com.gofocus.wxshop.service.VerificationCodeCheckService;
 import com.gofocus.wxshop.shiro.ShiroRealm;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.Authorizer;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.text.TextConfigurationRealm;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
@@ -30,6 +31,7 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
+/*
     @ExceptionHandler(AuthorizationException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public String handleException(AuthorizationException e, Model model) {
@@ -52,6 +54,7 @@ public class ShiroConfig {
         realm.setCachingEnabled(true);
         return realm;
     }
+*/
 
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
@@ -68,11 +71,16 @@ public class ShiroConfig {
         return SecurityUtils.getSubject();
     }
 
-    @Bean
+/*    @Bean
     public DefaultWebSecurityManager securityManager(ShiroRealm shiroRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(shiroRealm);
         return securityManager;
+    }*/
+
+    @Bean
+    public Authorizer authorizer(ShiroRealm shiroRealm) {
+        return shiroRealm;
     }
 
     @Bean

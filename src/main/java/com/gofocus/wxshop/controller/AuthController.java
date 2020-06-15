@@ -40,9 +40,9 @@ public class AuthController {
         UsernamePasswordToken token = new UsernamePasswordToken(
                 telAndCode.getTel(),
                 telAndCode.getCode());
-
+        token.setRememberMe(true);
         SecurityUtils.getSubject().login(token);
 
-        return SecurityUtils.getSubject().getPrincipal().toString();
+        return "当前登录用户名：" + SecurityUtils.getSubject().getPrincipal().toString();
     }
 }
