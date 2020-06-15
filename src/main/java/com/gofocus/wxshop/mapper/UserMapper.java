@@ -2,8 +2,9 @@ package com.gofocus.wxshop.mapper;
 
 import com.gofocus.wxshop.entity.User;
 import com.gofocus.wxshop.entity.UserExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface UserMapper {
     /**
