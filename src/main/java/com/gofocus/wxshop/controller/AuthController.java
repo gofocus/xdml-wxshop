@@ -2,6 +2,7 @@ package com.gofocus.wxshop.controller;
 
 import com.gofocus.wxshop.entity.TelAndCode;
 import com.gofocus.wxshop.service.AuthService;
+import com.gofocus.wxshop.service.TelVerificationService;
 import com.gofocus.wxshop.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Author: GoFocus
@@ -22,16 +25,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final UserService userService;
     private final AuthService authService;
+    private final TelVerificationService telVerificationService;
 
     @Autowired
-    public AuthController(UserService userService, AuthService authService) {
+    public AuthController(UserService userService, AuthService authService, TelVerificationService telVerificationService) {
         this.userService = userService;
         this.authService = authService;
+        this.telVerificationService = telVerificationService;
     }
 
     @PostMapping("/code")
-    public void code(@RequestBody TelAndCode telAndCode) {
-        authService.sendVerificationCode(telAndCode.getTel());
+    public void code(@RequestBody TelAndCode telAndCode, HttpServletResponse response) {
+        if (telVerificationService.verifyTelParameter(telAndCode)) {
+            authService.sendVerificationCode(telAndCode.getTel());
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
 
