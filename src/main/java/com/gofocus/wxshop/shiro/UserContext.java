@@ -35,4 +35,8 @@ public class UserContext {
         currentUser.set(user);
     }
 
+    public static void remove() {
+        currentUser.remove();
+    }
+
 }
