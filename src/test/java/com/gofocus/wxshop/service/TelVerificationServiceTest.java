@@ -10,13 +10,14 @@ import org.junit.jupiter.api.Test;
  * @Description:
  */
 class TelVerificationServiceTest {
+    public static final TelAndCode INVALID_PARAMETER = new TelAndCode("1391234567800000");
+    public static final TelAndCode VALID_PARAMETER = new TelAndCode("13912345678", "000000");
+    public static final TelAndCode NULL_TEL = new TelAndCode(null);
 
     @Test
     void verifyTelParameter() {
-        Assertions.assertTrue(new TelVerificationService().verifyTelParameter(new TelAndCode("13912345678")));
-        Assertions.assertFalse(new TelVerificationService().verifyTelParameter(new TelAndCode("1")));
-        Assertions.assertFalse(new TelVerificationService().verifyTelParameter(new TelAndCode(null)));
-        Assertions.assertFalse(new TelVerificationService().verifyTelParameter(new TelAndCode("1123455")));
-        Assertions.assertFalse(new TelVerificationService().verifyTelParameter(new TelAndCode("1123139123456784525")));
+        Assertions.assertFalse(new TelVerificationService().verifyTelParameter(INVALID_PARAMETER));
+        Assertions.assertTrue(new TelVerificationService().verifyTelParameter(VALID_PARAMETER));
+        Assertions.assertFalse(new TelVerificationService().verifyTelParameter(NULL_TEL));
     }
 }

@@ -25,6 +25,7 @@ public class AuthService {
 
 
     public void sendVerificationCode(String tel) {
+        userService.createUserIfNotExist(tel);
         String correctCode = smsCodeService.sendSmsCode(tel);
         verificationCodeCheckService.addCode(tel, correctCode);
     }

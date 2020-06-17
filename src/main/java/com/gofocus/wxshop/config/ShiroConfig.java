@@ -1,15 +1,25 @@
 package com.gofocus.wxshop.config;
 
+import com.gofocus.wxshop.service.UserService;
 import com.gofocus.wxshop.service.VerificationCodeCheckService;
 import com.gofocus.wxshop.shiro.ShiroRealm;
+import com.gofocus.wxshop.shiro.UserContext;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.Authorizer;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -18,7 +28,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
  * @Description: Shiro的配置类
  */
 @Configuration
-public class ShiroConfig {
+public class ShiroConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private UserService userService;
 
 /*
     @ExceptionHandler(AuthorizationException.class)
@@ -77,4 +90,45 @@ public class ShiroConfig {
         return new ShiroRealm(verificationCodeCheckService);
     }
 
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(userLoginInterceptor());
+    }
+
+    @Bean
+    public UserLoginInterceptor userLoginInterceptor() {
+        return new UserLoginInterceptor(userService);
+    }
+
+    private static class UserLoginInterceptor implements HandlerInterceptor {
+
+        private final UserService userService;
+
+        private UserLoginInterceptor(UserService userService) {
+            this.userService = userService;
+        }
+
+
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+/*            Object userTel = SecurityUtils.getSubject().getPrincipal();
+            if (userTel != null) {
+                User user = userService.getUserByTel(userTel.toString());
+                UserContext.setCurrentUser(user);
+            }*/
+
+            return true;
+        }
+
+        @Override
+        public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
+            UserContext.setCurrentUser(null);
+        }
+
+        @Override
+        public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+
+        }
+    }
 }

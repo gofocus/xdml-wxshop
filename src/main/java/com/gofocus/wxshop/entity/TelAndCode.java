@@ -9,8 +9,16 @@ public class TelAndCode {
     private String tel;
     private String code;
 
+    public TelAndCode() {
+    }
+
     public TelAndCode(String tel) {
         this.tel = tel;
+    }
+
+    public TelAndCode(String tel, String code) {
+        this.tel = tel;
+        this.code = code;
     }
 
     public String getTel() {

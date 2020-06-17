@@ -1,16 +1,16 @@
 package com.gofocus.wxshop.controller;
 
+import com.gofocus.wxshop.entity.LoginResponse;
 import com.gofocus.wxshop.entity.TelAndCode;
+import com.gofocus.wxshop.entity.User;
 import com.gofocus.wxshop.service.AuthService;
 import com.gofocus.wxshop.service.TelVerificationService;
 import com.gofocus.wxshop.service.UserService;
+import com.gofocus.wxshop.shiro.UserContext;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -53,5 +53,20 @@ public class AuthController {
         SecurityUtils.getSubject().login(token);
 
         return "当前登录用户名：" + SecurityUtils.getSubject().getPrincipal().toString();
+    }
+
+    @GetMapping("/status")
+    public Object status() {
+        User currentUser = UserContext.getCurrentUser();
+        if (currentUser != null) {
+            return LoginResponse.login(currentUser);
+        } else {
+            return LoginResponse.notLogin();
+        }
+    }
+
+    @GetMapping("/logout")
+    public void logOut() {
+        SecurityUtils.getSubject().logout();
     }
 }
