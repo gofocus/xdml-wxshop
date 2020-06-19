@@ -13,7 +13,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @Author: GoFocus

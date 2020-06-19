@@ -1,6 +1,5 @@
 package com.gofocus.wxshop.config;
 
-import com.gofocus.wxshop.service.UserService;
 import com.gofocus.wxshop.service.VerificationCodeCheckService;
 import com.gofocus.wxshop.shiro.ShiroRealm;
 import com.gofocus.wxshop.shiro.UserContext;
@@ -10,7 +9,6 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -21,7 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -50,8 +47,7 @@ public class ShiroConfig implements WebMvcConfigurer {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
 
-        //todo new HashMap()初始容量设置为100，请求就返回401，这是为什么？初始容量大于150或者不设置初始容量，请求正常返回200
-        Map<String, String> patterns = new HashMap<>(100);
+        Map<String, String> patterns = new LinkedHashMap<>();
         patterns.put("/api/logout", "anon");
         patterns.put("/api/code", "anon");
         patterns.put("/api/login", "anon");
