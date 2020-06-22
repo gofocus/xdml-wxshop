@@ -19,6 +19,8 @@ import java.util.Map;
 
 import static com.gofocus.wxshop.service.TelVerificationServiceTest.NULL_TEL;
 import static com.gofocus.wxshop.service.TelVerificationServiceTest.VALID_PARAMETER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @Author: GoFocus
@@ -38,7 +40,7 @@ public class AuthIntegrationTest extends AbstractIntegrationTest {
         Assertions.assertFalse(isLogin);
 
         int responseCode = httpPost("/api/code", VALID_PARAMETER, null).getCode();
-        Assertions.assertEquals(HttpStatus.OK.value(), responseCode);
+        assertEquals(HttpStatus.OK.value(), responseCode);
 
         Map<String, List<String>> headers = httpPost("/api/login", VALID_PARAMETER, null).getHeaders();
         String jSessionIdCookie = getJsessionid(headers);
@@ -46,8 +48,8 @@ public class AuthIntegrationTest extends AbstractIntegrationTest {
         HttpResponse httpResponse = httpGet("/api/status", jSessionIdCookie);
         LoginResponse loginResponse = readResponseBody(httpResponse, new TypeReference<LoginResponse>() {
         });
-        Assertions.assertTrue(loginResponse.isLogin());
-        Assertions.assertEquals(VALID_PARAMETER.getTel(), loginResponse.getUser().getTel());
+        assertTrue(loginResponse.isLogin());
+        assertEquals(VALID_PARAMETER.getTel(), loginResponse.getUser().getTel());
 
         httpGet("/api/logout", jSessionIdCookie);
 
@@ -61,14 +63,14 @@ public class AuthIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void returnHttpStatusOkWhenParameterIsCorrect() throws JsonProcessingException {
         int responseCode = httpPost("/api/code", VALID_PARAMETER, null).getCode();
-        Assertions.assertEquals(HttpServletResponse.SC_OK, responseCode);
+        assertEquals(HttpServletResponse.SC_OK, responseCode);
     }
 
 
     @Test
     public void returnHttpStatusBadRequestWhenParameterIsIncorrect() throws JsonProcessingException {
         int responseCode = httpPost("/api/code", NULL_TEL, null).getCode();
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), responseCode);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), responseCode);
     }
 
 }

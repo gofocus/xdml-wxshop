@@ -1,10 +1,8 @@
 package com.gofocus.wxshop.service;
 
 import com.gofocus.wxshop.entity.*;
-import com.gofocus.wxshop.exception.GoodsNotFoundException;
-import com.gofocus.wxshop.exception.NotAuthorized4HandlingGoods;
+import com.gofocus.wxshop.exception.HttpException;
 import com.gofocus.wxshop.mapper.GoodsMapper;
-import com.gofocus.wxshop.mapper.ShopMapper;
 import com.gofocus.wxshop.shiro.UserContext;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +19,10 @@ import java.util.Objects;
 public class GoodsService {
 
     private final GoodsMapper goodsMapper;
-    private final ShopMapper shopMapper;
     private final ShopService shopService;
 
-    public GoodsService(GoodsMapper goodsMapper, ShopMapper shopMapper, ShopService shopService) {
+    public GoodsService(GoodsMapper goodsMapper, ShopService shopService) {
         this.goodsMapper = goodsMapper;
-        this.shopMapper = shopMapper;
         this.shopService = shopService;
     }
 
@@ -37,22 +33,24 @@ public class GoodsService {
             goodsMapper.insertSelective(goods);
             return goods;
         } else {
-            throw new NotAuthorized4HandlingGoods("没有修改店铺的商品的权限");
+            throw HttpException.forbidden("没有修改店铺的商品的权限");
         }
     }
 
     public Goods deleteGoodsById(Long goodsId) {
         Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
         if (goods == null) {
-            throw new GoodsNotFoundException("商品不存在");
-        } else if (!Objects.equals(goods.getShopId(), UserContext.getCurrentUser().getId())) {
-            throw new NotAuthorized4HandlingGoods("没有操作该商品的权限");
+            throw HttpException.notFound("商品不存在");
         } else {
-            Goods goods2Delete = new Goods();
-            goods2Delete.setId(goodsId);
-            goods2Delete.setStatus(GoodsStatus.DELETED.getName());
-            goodsMapper.updateByPrimaryKeySelective(goods2Delete);
-            return goodsMapper.selectByPrimaryKey(goodsId);
+            Shop shop = shopService.getShopById(goods.getShopId());
+
+            if (shop != null && !Objects.equals(shop.getOwnerUserId(), UserContext.getCurrentUser().getId())) {
+                throw HttpException.forbidden("没有操作该商品的权限");
+            } else {
+                goods.setStatus(DataStatus.DELETED.getName());
+                goodsMapper.updateByPrimaryKeySelective(goods);
+                return goodsMapper.selectByPrimaryKey(goodsId);
+            }
         }
     }
 
@@ -76,7 +74,7 @@ public class GoodsService {
     public Long countGoodsByShopId(Long shopId) {
         GoodsExample example = new GoodsExample();
         GoodsExample.Criteria criteria = example.createCriteria();
-        criteria.andStatusEqualTo(GoodsStatus.OK.getName());
+        criteria.andStatusEqualTo(DataStatus.OK.getName());
         if (shopId != null) {
             Shop shop = shopService.getShopById(shopId);
             if (shop != null) {
@@ -84,5 +82,26 @@ public class GoodsService {
             }
         }
         return goodsMapper.countByExample(example);
+    }
+
+    public Goods updateGoods(Long goodsId, Goods goods) {
+        if (goodsMapper.selectByPrimaryKey(goodsId) == null) {
+            throw HttpException.notFound("商品未找到");
+        } else if (!currentUserHasGoodsPermission(goodsId)) {
+            throw HttpException.forbidden("没有权限");
+        } else {
+            goods.setId(goodsId);
+            goodsMapper.updateByPrimaryKeySelective(goods);
+            return goods;
+        }
+    }
+
+    public boolean currentUserHasGoodsPermission(Long goodsId) {
+        User currentUser = UserContext.getCurrentUser();
+        Long userId = currentUser.getId();
+        Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
+        Shop shop = shopService.getShopById(goods.getShopId());
+        Long ownerUserId = shop.getOwnerUserId();
+        return userId.equals(ownerUserId);
     }
 }

@@ -1,11 +1,10 @@
 package com.gofocus.wxshop.controller;
 
+import com.gofocus.wxshop.entity.DataStatus;
 import com.gofocus.wxshop.entity.Goods;
-import com.gofocus.wxshop.entity.GoodsStatus;
 import com.gofocus.wxshop.entity.PaginationResponse;
 import com.gofocus.wxshop.entity.Response;
-import com.gofocus.wxshop.exception.GoodsNotFoundException;
-import com.gofocus.wxshop.exception.NotAuthorized4HandlingGoods;
+import com.gofocus.wxshop.exception.HttpException;
 import com.gofocus.wxshop.service.GoodsService;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +44,7 @@ public class GoodsController {
 
     private void cleanGoodsParam(Goods goods) {
         goods.setId(null);
-        goods.setStatus(GoodsStatus.OK.getName());
+        goods.setStatus(DataStatus.OK.getName());
         goods.setCreatedAt(new Date());
         goods.setUpdatedAt(new Date());
     }
@@ -54,11 +53,8 @@ public class GoodsController {
     public Response<Goods> deleteGoods(@PathVariable("id") Long goodsId, HttpServletResponse response) {
         try {
             return Response.success(goodsService.deleteGoodsById(goodsId));
-        } catch (NotAuthorized4HandlingGoods e) {
-            response.setStatus(SC_FORBIDDEN);
-            return Response.failure(e.getMessage());
-        } catch (GoodsNotFoundException e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        } catch (HttpException e) {
+            response.setStatus(e.getStatusCode());
             return Response.failure(e.getMessage());
         }
     }
@@ -68,8 +64,18 @@ public class GoodsController {
                                               @RequestParam("pageSize") Integer pageSize,
                                               @RequestParam(name = "shopId", required = false) Long shopId) {
 
-        PaginationResponse<Goods> goods = goodsService.getGoodsWithPagination(pageNum, pageSize, shopId);
+        return goodsService.getGoodsWithPagination(pageNum, pageSize, shopId);
+    }
 
-        return goods;
+    @PatchMapping("/goods/{id}")
+    public Response<Goods> updateGoods(@PathVariable("id") Long goodsId,
+                                       @RequestBody Goods goods,
+                                       HttpServletResponse response) {
+        try {
+            return Response.success(goodsService.updateGoods(goodsId, goods));
+        } catch (HttpException e) {
+            response.setStatus(e.getStatusCode());
+            return Response.failure(e.getMessage());
+        }
     }
 }

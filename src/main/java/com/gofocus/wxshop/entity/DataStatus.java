@@ -5,7 +5,7 @@ package com.gofocus.wxshop.entity;
  * @Date: 2020-06-19 16:18
  * @Description:
  */
-public enum GoodsStatus {
+public enum DataStatus {
     DELETED(),
     OK();
 
