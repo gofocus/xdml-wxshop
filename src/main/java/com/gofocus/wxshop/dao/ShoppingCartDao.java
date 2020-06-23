@@ -25,4 +25,6 @@ public interface ShoppingCartDao {
     Integer countHowManyShopInUserShoppingCart(Long userId);
 
 
+    List<ShoppingCartData> getShoppingCartDataByUserIdAndShopId(Long userId, Long shopId);
+
 }

@@ -4,14 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.gofocus.wxshop.AbstractIntegrationTest;
 import com.gofocus.wxshop.WxshopApplication;
-import com.gofocus.wxshop.entity.PaginationResponse;
-import com.gofocus.wxshop.entity.ShoppingCartData;
-import org.junit.jupiter.api.Assertions;
+import com.gofocus.wxshop.entity.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @Author: GoFocus
@@ -34,8 +36,31 @@ public class ShoppingCartIntegrationTest extends AbstractIntegrationTest {
 
         ShoppingCartData shoppingCartData1 = paginationResponse.getData().get(0);
         ShoppingCartData shoppingCartData2 = paginationResponse.getData().get(1);
-        Assertions.assertEquals(shoppingCartData1.getGoods().size(), 1);
-        Assertions.assertEquals(shoppingCartData2.getGoods().size(), 3);
+        assertEquals(2, shoppingCartData1.getGoods().size());
+        assertEquals(2, shoppingCartData2.getGoods().size());
+
+    }
+
+    @Test
+    void addToShoppingCartSucceed() throws JsonProcessingException {
+        String cookie = loginAndGetCookie();
+
+        ShoppingCartController.AddToShoppingCartRequest request = new ShoppingCartController.AddToShoppingCartRequest();
+        ArrayList<AddToShoppingCartItem> items = new ArrayList<>();
+        items.add(new AddToShoppingCartItem(1L, 100));
+        items.add(new AddToShoppingCartItem(2L, 100));
+        request.setGoods(items);
+
+        HttpResponse httpResponse = httpPost("/api/v1/shoppingCart", request, cookie);
+
+        Response<ShoppingCartData> shoppingCartDataResponse = readResponseBody(httpResponse, new TypeReference<Response<ShoppingCartData>>() {
+        });
+
+        Shop shop = shoppingCartDataResponse.getData().getShop();
+        assertEquals(1L, shop.getId());
+
+        int goodsSize = shoppingCartDataResponse.getData().getGoods().size();
+        assertEquals(2, goodsSize);
 
     }
 

@@ -1,9 +1,7 @@
 package com.gofocus.wxshop.controller;
 
-import com.gofocus.wxshop.entity.Goods;
-import com.gofocus.wxshop.entity.PaginationResponse;
-import com.gofocus.wxshop.entity.Response;
-import com.gofocus.wxshop.entity.ShoppingCartData;
+import com.gofocus.wxshop.entity.*;
+import com.gofocus.wxshop.exception.HttpException;
 import com.gofocus.wxshop.service.ShoppingCartService;
 import com.gofocus.wxshop.shiro.UserContext;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +25,13 @@ public class ShoppingCartController {
     }
 
     @PostMapping
-    public Response<Goods> addToShoppingCart(@RequestBody AddToShoppingCartRequest addToShoppingCartRequest) {
-        return null;
+    public Response<ShoppingCartData> addToShoppingCart(@RequestBody AddToShoppingCartRequest addToShoppingCartRequest) {
+        try {
+            ShoppingCartData shoppingCartData = shoppingCartService.addToShoppingCart(addToShoppingCartRequest);
+            return Response.success(shoppingCartData);
+        } catch (HttpException e) {
+            return Response.failure(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -36,8 +39,15 @@ public class ShoppingCartController {
             @RequestParam("pageNum") Integer pageNum,
             @RequestParam("pageSize") Integer pageSize
     ) {
+        return shoppingCartService.getShoppingCartDataByUserId(
+                UserContext.getCurrentUser().getId(),
+                pageNum,
+                pageSize);
+    }
 
-        return shoppingCartService.selectShoppingCartDataByUserId(UserContext.getCurrentUser().getId(), pageNum, pageSize);
+    @DeleteMapping
+    public Response<ShoppingCartData> deleteGoods() {
+        return null;
     }
 
     public static class AddToShoppingCartRequest {
@@ -49,27 +59,6 @@ public class ShoppingCartController {
 
         public void setGoods(List<AddToShoppingCartItem> goods) {
             this.goods = goods;
-        }
-    }
-
-    public static class AddToShoppingCartItem {
-        private Long id;
-        private Integer number;
-
-        public Long getId() {
-            return id;
-        }
-
-        public void setId(Long id) {
-            this.id = id;
-        }
-
-        public Integer getNumber() {
-            return number;
-        }
-
-        public void setNumber(Integer number) {
-            this.number = number;
         }
     }
 

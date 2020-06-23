@@ -1,6 +1,6 @@
 package com.gofocus.wxshop.exception;
 
-import javax.servlet.http.HttpServletResponse;
+import static javax.servlet.http.HttpServletResponse.*;
 
 /**
  * @Author: GoFocus
@@ -13,16 +13,20 @@ public class HttpException extends RuntimeException {
     private String message;
 
     public static HttpException forbidden(String message) {
-        return new HttpException(HttpServletResponse.SC_FORBIDDEN, message);
+        return new HttpException(SC_FORBIDDEN, message);
     }
 
     public static HttpException notFound(String message) {
-        return new HttpException(HttpServletResponse.SC_NOT_FOUND, message);
+        return new HttpException(SC_NOT_FOUND, message);
     }
 
     private HttpException(int statusCode, String message) {
         super(message);
         this.statusCode = statusCode;
+    }
+
+    public static HttpException badRequest(String message) {
+        return new HttpException(SC_BAD_REQUEST, message);
     }
 
     public int getStatusCode() {

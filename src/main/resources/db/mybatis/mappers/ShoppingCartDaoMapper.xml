@@ -21,6 +21,8 @@
             <result property="number" column="GOODS_NUMBER"/>
             <result property="createdAt" column="GOODS_CREATED_AT"/>
             <result property="updatedAt" column="GOODS_UPDATED_AT"/>
+            <result property="shopId" column="SHOP_ID"/>
+            <result property="status" column="GOODS_STATUS"/>
         </collection>
     </resultMap>
 
@@ -48,7 +50,8 @@
         GOODS.PRICE AS GOODS_PRICE,
         SHOPPING_CART.NUMBER AS GOODS_NUMBER,
         GOODS.CREATED_AT AS GOODS_CREATED_AT,
-        GOODS.UPDATED_AT AS GOODS_UPDATED_AT
+        GOODS.UPDATED_AT AS GOODS_UPDATED_AT,
+        GOODS.STATUS AS GOODS_STATUS
         FROM
         (SELECT DISTINCT SHOP_ID
         FROM SHOPPING_CART
@@ -64,6 +67,30 @@
         JOIN GOODS on GOODS.ID = SHOPPING_CART.GOODS_ID
         JOIN SHOP on SHOP.ID = SHOPPING_CART.SHOP_ID
         WHERE SHOPPING_CART.STATUS = 'ok'
+    </select>
+    <select id="getShoppingCartDataByUserIdAndShopId" resultMap="shoppingCartShopMap">
+        SELECT SHOP.ID              AS SHOP_ID,
+               SHOP.NAME            AS SHOP_NAME,
+               SHOP.DESCRIPTION     AS SHOP_DESCRIPTION,
+               SHOP.IMG_URL         AS SHOP_IMG_URL,
+               SHOP.OWNER_USER_ID   AS SHOP_OWNER_USER_ID,
+               SHOP.CREATED_AT      AS SHOP_CREATED_AT,
+               SHOP.UPDATED_AT      AS SHOP_UPDATED_AT,
+               GOODS.ID             AS GOODS_ID,
+               GOODS.NAME           AS GOODS_NAME,
+               GOODS.DESCRIPTION    AS GOODS_DESCRIPTION,
+               GOODS.DETAILS        AS GOODS_DETAILS,
+               GOODS.IMG_URL        AS GOODS_IMG_URL,
+               GOODS.PRICE          AS GOODS_PRICE,
+               SHOPPING_CART.NUMBER AS GOODS_NUMBER,
+               GOODS.CREATED_AT     AS GOODS_CREATED_AT,
+               GOODS.UPDATED_AT     AS GOODS_UPDATED_AT
+        FROM SHOPPING_CART
+                 JOIN GOODS on GOODS.ID = SHOPPING_CART.GOODS_ID
+                 JOIN SHOP on SHOP.ID = SHOPPING_CART.SHOP_ID
+        WHERE SHOPPING_CART.STATUS = 'ok'
+            AND SHOPPING_CART.SHOP_ID = #{shopId}
+            AND SHOPPING_CART.USER_ID = #{userId}
     </select>
 
 
