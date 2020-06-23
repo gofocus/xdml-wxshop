@@ -4,6 +4,7 @@ import com.gofocus.wxshop.entity.User;
 import com.gofocus.wxshop.entity.UserExample;
 import com.gofocus.wxshop.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -33,7 +34,7 @@ public class UserService {
             user.setCreatedAt(new Date());
             user.setUpdatedAt(new Date());
             userMapper.insert(user);
-        } catch (Exception e) {
+        } catch (DuplicateKeyException e) {
             getUserByTel(tel);
         }
     }

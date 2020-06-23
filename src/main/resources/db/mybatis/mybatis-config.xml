@@ -4,7 +4,14 @@
 <configuration>
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
     </settings>
+    <typeAliases>
+        <typeAlias type="com.gofocus.wxshop.entity.Goods" alias="Goods"/>
+        <typeAlias type="com.gofocus.wxshop.entity.Shop" alias="Shop"/>
+        <typeAlias type="com.gofocus.wxshop.entity.ShoppingCartData" alias="ShoppingCartData"/>
+        <typeAlias type="com.gofocus.wxshop.entity.ShoppingCartGoods" alias="ShoppingCartGoods"/>
+    </typeAliases>
     <mappers>
         <!--        <mapper resource="db/mybatis/mappers/UserMapper.xml"/>-->
     </mappers>
