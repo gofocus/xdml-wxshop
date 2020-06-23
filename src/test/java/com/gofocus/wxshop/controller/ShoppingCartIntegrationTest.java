@@ -12,6 +12,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -61,7 +62,24 @@ public class ShoppingCartIntegrationTest extends AbstractIntegrationTest {
 
         int goodsSize = shoppingCartDataResponse.getData().getGoods().size();
         assertEquals(2, goodsSize);
+    }
 
+    @Test
+    void deleteGoodsInShoppingCart() throws JsonProcessingException {
+        String cookie = loginAndGetCookie();
+
+        HttpResponse httpResponse = httpDelete("/api/v1/shoppingCart/1", cookie);
+
+        Response<ShoppingCartData> response = readResponseBody(httpResponse, new TypeReference<Response<ShoppingCartData>>() {
+        });
+
+        Shop shop = response.getData().getShop();
+        List<ShoppingCartGoods> goods = response.getData().getGoods();
+
+        assertEquals(1L, shop.getId());
+        assertEquals(1, goods.size());
+        assertEquals(2L, goods.get(0).getId());
+        assertEquals("ok", goods.get(0).getStatus());
     }
 
 }

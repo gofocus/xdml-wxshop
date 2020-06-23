@@ -1,6 +1,9 @@
 package com.gofocus.wxshop.controller;
 
-import com.gofocus.wxshop.entity.*;
+import com.gofocus.wxshop.entity.AddToShoppingCartItem;
+import com.gofocus.wxshop.entity.PaginationResponse;
+import com.gofocus.wxshop.entity.Response;
+import com.gofocus.wxshop.entity.ShoppingCartData;
 import com.gofocus.wxshop.exception.HttpException;
 import com.gofocus.wxshop.service.ShoppingCartService;
 import com.gofocus.wxshop.shiro.UserContext;
@@ -27,7 +30,8 @@ public class ShoppingCartController {
     @PostMapping
     public Response<ShoppingCartData> addToShoppingCart(@RequestBody AddToShoppingCartRequest addToShoppingCartRequest) {
         try {
-            ShoppingCartData shoppingCartData = shoppingCartService.addToShoppingCart(addToShoppingCartRequest);
+            Long userId = UserContext.getCurrentUser().getId();
+            ShoppingCartData shoppingCartData = shoppingCartService.addToShoppingCart(addToShoppingCartRequest, userId);
             return Response.success(shoppingCartData);
         } catch (HttpException e) {
             return Response.failure(e.getMessage());
@@ -45,9 +49,15 @@ public class ShoppingCartController {
                 pageSize);
     }
 
-    @DeleteMapping
-    public Response<ShoppingCartData> deleteGoods() {
-        return null;
+    @DeleteMapping("/{goodsId}")
+    public Response<ShoppingCartData> deleteGoodsInShoppingCart(@PathVariable("goodsId") Long goodsId) {
+        try {
+            Long userId = UserContext.getCurrentUser().getId();
+            ShoppingCartData shoppingCartData = shoppingCartService.deleteGoods(goodsId, userId);
+            return Response.success(shoppingCartData);
+        } catch (HttpException e) {
+            return Response.failure(e.getMessage());
+        }
     }
 
     public static class AddToShoppingCartRequest {

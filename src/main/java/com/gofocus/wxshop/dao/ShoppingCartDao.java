@@ -27,4 +27,6 @@ public interface ShoppingCartDao {
 
     List<ShoppingCartData> getShoppingCartDataByUserIdAndShopId(Long userId, Long shopId);
 
+    void deleteGoods(@Param("goodsId") Long goodsId,
+                     @Param("userId") Long userId);
 }

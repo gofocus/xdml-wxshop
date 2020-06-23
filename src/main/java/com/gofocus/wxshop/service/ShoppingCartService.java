@@ -61,13 +61,12 @@ public class ShoppingCartService {
         return shoppingCartData;
     }
 
-    public ShoppingCartData getShoppingCartDataByUserIdAndShopId(Long shopId) {
-        Long userId = UserContext.getCurrentUser().getId();
+    public ShoppingCartData getShoppingCartDataByUserIdAndShopId(Long shopId, Long userId) {
         return shoppingCartDao.getShoppingCartDataByUserIdAndShopId(userId, shopId).get(0);
     }
 
-//    @SuppressFBWarnings("")
-    public ShoppingCartData addToShoppingCart(ShoppingCartController.AddToShoppingCartRequest addToShoppingCartRequest) {
+    //    @SuppressFBWarnings("")
+    public ShoppingCartData addToShoppingCart(ShoppingCartController.AddToShoppingCartRequest addToShoppingCartRequest, Long userId) {
         final List<AddToShoppingCartItem> requestGoods = addToShoppingCartRequest.getGoods();
         List<Long> goodsIdList = requestGoods
                 .stream()
@@ -95,9 +94,7 @@ public class ShoppingCartService {
             shoppingCartRows.forEach(mapper::insertSelective);
             sqlSession.commit();
         }
-
-        return getShoppingCartDataByUserIdAndShopId(shopId);
-
+        return getShoppingCartDataByUserIdAndShopId(shopId, userId);
     }
 
     private ShoppingCart toShoppingCartRow(AddToShoppingCartItem item, Map<Long, Goods> idToGoodsMap) {
@@ -117,4 +114,12 @@ public class ShoppingCartService {
     }
 
 
+    public ShoppingCartData deleteGoods(Long goodsId, Long userId) {
+        Goods goods = goodsMapper.selectByPrimaryKey(goodsId);
+        if (goods == null) {
+            throw HttpException.notFound("商品未找到");
+        }
+        shoppingCartDao.deleteGoods(goodsId, userId);
+        return getShoppingCartDataByUserIdAndShopId(goods.getShopId(), userId);
+    }
 }
