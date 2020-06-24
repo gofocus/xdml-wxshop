@@ -4,11 +4,13 @@ import com.gofocus.wxshop.service.VerificationCodeCheckService;
 import com.gofocus.wxshop.shiro.ShiroRealm;
 import com.gofocus.wxshop.shiro.UserContext;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.cache.MemoryConstrainedCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -30,6 +32,9 @@ import java.util.Map;
  */
 @Configuration
 public class ShiroConfig implements WebMvcConfigurer {
+
+    @Value("${wxshop.redis.host}")
+    private String redisHost;
 
 /*    @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
@@ -64,16 +69,24 @@ public class ShiroConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    public SecurityManager securityManager(ShiroRealm shiroRealm) {
+    public RedisCacheManager redisCacheManager() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost(redisHost);
+        redisCacheManager.setRedisManager(redisManager);
+        return redisCacheManager;
+    }
+
+    @Bean
+    public SecurityManager securityManager(ShiroRealm shiroRealm, RedisCacheManager redisCacheManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
 
         securityManager.setRealm(shiroRealm);
-        securityManager.setCacheManager(new MemoryConstrainedCacheManager());
+        securityManager.setCacheManager(redisCacheManager);
         securityManager.setSessionManager(new DefaultWebSessionManager());
         SecurityUtils.setSecurityManager(securityManager);
         return securityManager;
     }
-
 
     @Bean
     public ShiroRealm myShiroRealm(VerificationCodeCheckService verificationCodeCheckService) {

@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = WxshopApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = "classpath:application.yml")
+@TestPropertySource(properties = {"spring.config.location=classpath:application-test.yml"})
 public class AuthIntegrationTest extends AbstractIntegrationTest {
 
     @Test
