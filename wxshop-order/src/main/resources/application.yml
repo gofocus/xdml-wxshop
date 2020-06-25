@@ -1,0 +1,21 @@
+
+
+wxshop:
+  orderservice:
+    version: 1.0.0
+
+# Spring boot application
+spring:
+  application:
+    name: orderservice
+
+dubbo:
+  scan:
+    base-packages: com.gofocus.wxshop.api
+  registry:
+    address: zookeeper://192.168.99.100:2181
+  config-center:
+    timeout: 10000
+  protocol:
+    name: dubbo
+    port: -1

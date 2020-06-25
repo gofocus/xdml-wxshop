@@ -6,15 +6,12 @@
         <groupId>com.gofocus</groupId>
         <artifactId>wxshop-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>
     <artifactId>wxshop-main</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>wxshop-main</name>
     <description>wxshop-main</description>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -90,6 +87,17 @@
             <artifactId>shiro-redis</artifactId>
             <version>3.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+        </dependency>
+        <!-- Zookeeper dependencies -->
+        <dependency>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-dependencies-zookeeper</artifactId>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     <build>
