@@ -1,4 +1,7 @@
+
 spring:
+  application:
+    name: test-wxshop
   datasource:
     url: jdbc:mysql://192.168.99.100:3307/wxshop
     username: root
@@ -10,5 +13,17 @@ mybatis:
   mapper-locations: classpath*:**/mappers/*.xml
 
 wxshop:
+  orderservice:
+    version: 1.0.0
+    url: dubbo://192.168.99.100:12345
   redis:
     host: 192.168.99.100:6379
+
+dubbo:
+  protocol:
+    name: dubbo
+    port: 12345
+  scan:
+    base-packages: com.gofocus.wxshop.mock
+  registry:
+    address: N/A

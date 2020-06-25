@@ -1,4 +1,9 @@
+server:
+  port: 8081
+
 spring:
+  application:
+    name: moudles-main
   datasource:
     url: jdbc:mysql://192.168.99.100:3306/wxshop
     username: root
@@ -12,9 +17,10 @@ mybatis:
 wxshop:
   orderservice:
     version: 1.0.0
+    url: ""
   redis:
     host: 192.168.99.100:6379
 
 dubbo:
   registry:
-    address: zookeeper://192.168.99.100:2181
+    address: zookeeper://192.168.99.100:2181?timeout=1000000
