@@ -24,6 +24,6 @@ dubbo:
     name: dubbo
     port: 12345
   scan:
-    base-packages: com.gofocus.wxshop.mock
+    base-packages: com.gofocus.wxshop.main.mock
   registry:
     address: N/A

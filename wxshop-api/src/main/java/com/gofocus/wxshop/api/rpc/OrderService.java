@@ -7,4 +7,7 @@ package com.gofocus.wxshop.api.rpc;
  */
 
 public interface OrderService {
+
+    String placeOrder(int goodsId, int number);
+
 }

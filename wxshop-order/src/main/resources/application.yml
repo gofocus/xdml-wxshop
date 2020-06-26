@@ -1,15 +1,20 @@
+
+spring:
+  application:
+    name: orderservice
+  datasource:
+    url: jdbc:mysql://192.168.99.100:3306/wxshop_order
+    username: root
+    password: 64793393
+    driverClassName: com.mysql.cj.jdbc.Driver
+
 wxshop:
   orderservice:
     version: 1.0.0
 
-# Spring boot application
-spring:
-  application:
-    name: orderservice
-
 dubbo:
   scan:
-    base-packages: com.gofocus.wxshop.api
+    base-packages: com.gofocus.wxshop.order.orderService
   registry:
     address: zookeeper://192.168.99.100:2181?timeout=100000
   protocol:
