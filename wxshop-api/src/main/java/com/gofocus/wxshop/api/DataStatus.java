@@ -1,4 +1,4 @@
-package com.gofocus.wxshop.main.entity;
+package com.gofocus.wxshop.api;
 
 /**
  * @Author: GoFocus
@@ -7,7 +7,13 @@ package com.gofocus.wxshop.main.entity;
  */
 public enum DataStatus {
     DELETED(),
-    OK();
+    OK(),
+
+    // only for order
+    PENDING(),
+    PAID(),
+    DELIVERED(),
+    RECEIVED();
 
     public String getName() {
         return name().toLowerCase();

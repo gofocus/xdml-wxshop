@@ -7,10 +7,6 @@
         <setting name="logImpl" value="org.apache.ibatis.logging.stdout.StdOutImpl"/>
     </settings>
     <typeAliases>
-        <typeAlias type="com.gofocus.wxshop.main.generate.Goods" alias="Goods"/>
-        <typeAlias type="com.gofocus.wxshop.main.generate.Shop" alias="Shop"/>
-        <typeAlias type="com.gofocus.wxshop.main.entity.ShoppingCartData" alias="ShoppingCartData"/>
-        <typeAlias type="com.gofocus.wxshop.main.entity.GoodsWithNumber" alias="GoodsWithNumber"/>
     </typeAliases>
     <mappers>
         <!--        <mapper resource="db/mybatis/mappers/UserMapper.xml"/>-->

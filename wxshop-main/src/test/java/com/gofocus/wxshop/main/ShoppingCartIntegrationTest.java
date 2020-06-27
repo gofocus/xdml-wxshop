@@ -1,9 +1,8 @@
-package com.gofocus.wxshop.main.controller;
+package com.gofocus.wxshop.main;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gofocus.wxshop.main.AbstractIntegrationTest;
-import com.gofocus.wxshop.main.WxshopApplication;
+import com.gofocus.wxshop.main.controller.ShoppingCartController;
 import com.gofocus.wxshop.main.entity.*;
 import com.gofocus.wxshop.main.generate.Shop;
 import org.junit.jupiter.api.Test;
@@ -75,7 +74,7 @@ public class ShoppingCartIntegrationTest extends AbstractIntegrationTest {
         });
 
         Shop shop = response.getData().getShop();
-        List<ShoppingCartGoods> goods = response.getData().getGoods();
+        List<GoodsWithNumber> goods = response.getData().getGoods();
 
         assertEquals(1L, shop.getId());
         assertEquals(1, goods.size());

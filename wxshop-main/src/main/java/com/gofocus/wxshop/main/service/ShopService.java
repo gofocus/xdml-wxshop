@@ -1,6 +1,7 @@
 package com.gofocus.wxshop.main.service;
 
-import com.gofocus.wxshop.main.entity.*;
+import com.gofocus.wxshop.api.DataStatus;
+import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.exception.HttpException;
 import com.gofocus.wxshop.main.generate.Shop;
 import com.gofocus.wxshop.main.generate.ShopExample;

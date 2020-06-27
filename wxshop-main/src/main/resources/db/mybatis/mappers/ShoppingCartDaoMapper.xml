@@ -11,7 +11,7 @@
         <result property="shop.ownerUserId" column="SHOP_OWNER_USER_ID"/>
         <result property="shop.createdAt" column="SHOP_CREATED_AT"/>
         <result property="shop.updatedAt" column="SHOP_UPDATED_AT"/>
-        <collection property="goods" ofType="ShoppingCartGoods">
+        <collection property="goods" ofType="GoodsWithNumber">
             <id property="id" column="GOODS_ID"/>
             <result property="name" column="GOODS_NAME"/>
             <result property="description" column="GOODS_DESCRIPTION"/>

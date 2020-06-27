@@ -9,7 +9,16 @@ import java.util.List;
  * @Description:
  */
 public class OrderInfo implements Serializable {
+    private long orderId;
     private List<GoodsInfo> goods;
+
+    public long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(long orderId) {
+        this.orderId = orderId;
+    }
 
     public List<GoodsInfo> getGoods() {
         return goods;

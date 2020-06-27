@@ -7,14 +7,15 @@ import com.gofocus.wxshop.main.generate.Goods;
  * @Date: 2020-06-22 19:05
  * @Description:
  */
-public class ShoppingCartGoods extends Goods {
+public class GoodsWithNumber extends Goods {
 
     private Integer number;
 
-    public ShoppingCartGoods() {
+    public GoodsWithNumber() {
     }
 
-    public ShoppingCartGoods(Goods goods) {
+    public GoodsWithNumber(Goods goods, Integer number) {
+        this.setNumber(number);
         this.setId(goods.getId());
         this.setShopId(goods.getShopId());
         this.setName(goods.getName());

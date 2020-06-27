@@ -52,6 +52,15 @@
                 <groupId>org.mybatis.generator</groupId>
                 <artifactId>mybatis-generator-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <url>jdbc:mysql://192.168.99.100:3306/wxshop_order</url>
+                    <user>root</user>
+                    <password>64793393</password>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

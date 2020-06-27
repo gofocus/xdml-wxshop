@@ -1,9 +1,7 @@
-package com.gofocus.wxshop.main.controller;
+package com.gofocus.wxshop.main;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gofocus.wxshop.main.AbstractIntegrationTest;
-import com.gofocus.wxshop.main.WxshopApplication;
 import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.generate.Goods;

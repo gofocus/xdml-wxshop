@@ -2,7 +2,7 @@
         "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
-    <context id="wxshop-order" targetRuntime="MyBatis3">
+    <context id="wxshop_order" targetRuntime="MyBatis3">
         <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin"/>
         <plugin type="com.qiukeke.mybatis.plugins.MySQLLimitPlugin"/>
         <jdbcConnection
@@ -14,7 +14,7 @@
         <javaTypeResolver>
             <property name="forceBigDecimals" value="true"/>
         </javaTypeResolver>
-        <javaModelGenerator targetPackage="com.gofocus.wxshop.order.generate" targetProject="wxshop-order/src/main/java">
+        <javaModelGenerator targetPackage="com.gofocus.wxshop.api.generate" targetProject="wxshop-api/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>

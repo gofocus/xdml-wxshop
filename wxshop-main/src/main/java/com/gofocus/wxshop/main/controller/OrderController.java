@@ -1,10 +1,17 @@
 package com.gofocus.wxshop.main.controller;
 
-import com.gofocus.wxshop.api.rpc.OrderService;
-import org.apache.dubbo.config.annotation.DubboReference;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.main.entity.OrderResponse;
+import com.gofocus.wxshop.main.entity.Response;
+import com.gofocus.wxshop.main.exception.HttpException;
+import com.gofocus.wxshop.main.service.OrderService;
+import com.gofocus.wxshop.main.shiro.UserContext;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Author: GoFocus
@@ -16,14 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/order")
 public class OrderController {
 
-    @DubboReference(version = "${wxshop.orderservice.version}", url = "${wxshop.orderservice.url}")
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    @GetMapping
-    public String testRpc() {
-        String s = orderService.placeOrder(1, 2);
-        System.out.println(s);
-        return s;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    @PostMapping
+    public Response<OrderResponse> createOrder(@RequestBody OrderInfo orderInfo, HttpServletResponse response) {
+        try {
+            OrderResponse orderResponse = orderService.placeOrder(orderInfo, UserContext.getCurrentUser().getId());
+            return Response.success(orderResponse);
+        } catch (HttpException e) {
+            response.setStatus(e.getStatusCode());
+            return Response.failure(e.getMessage());
+        }
+
     }
 
 }

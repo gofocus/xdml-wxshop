@@ -1,6 +1,6 @@
 package com.gofocus.wxshop.main.controller;
 
-import com.gofocus.wxshop.main.entity.DataStatus;
+import com.gofocus.wxshop.api.DataStatus;
 import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.exception.HttpException;

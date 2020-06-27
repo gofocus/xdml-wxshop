@@ -1,9 +1,7 @@
-package com.gofocus.wxshop.main.service;
+package com.gofocus.wxshop.main;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gofocus.wxshop.main.AbstractIntegrationTest;
-import com.gofocus.wxshop.main.WxshopApplication;
 import com.gofocus.wxshop.main.entity.LoginResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,10 +1,16 @@
 package com.gofocus.wxshop.main.service;
 
-import com.gofocus.wxshop.main.entity.*;
+import com.gofocus.wxshop.api.DataStatus;
+import com.gofocus.wxshop.api.data.GoodsInfo;
+import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.main.dao.GoodsDao;
+import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.exception.HttpException;
 import com.gofocus.wxshop.main.generate.*;
 import com.gofocus.wxshop.main.shiro.UserContext;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,10 +26,14 @@ public class GoodsService {
 
     private final GoodsMapper goodsMapper;
     private final ShopService shopService;
+    private final GoodsDao goodsDao;
+    private final SqlSessionFactory sqlsessionFactory;
 
-    public GoodsService(GoodsMapper goodsMapper, ShopService shopService) {
+    public GoodsService(GoodsMapper goodsMapper, ShopService shopService, GoodsDao goodsDao, SqlSessionFactory sqlsessionFactory) {
         this.goodsMapper = goodsMapper;
         this.shopService = shopService;
+        this.goodsDao = goodsDao;
+        this.sqlsessionFactory = sqlsessionFactory;
     }
 
     public Goods createGoods(Goods goods) {
@@ -104,4 +114,15 @@ public class GoodsService {
         Long ownerUserId = shop.getOwnerUserId();
         return userId.equals(ownerUserId);
     }
+
+    @Transactional
+    public void deductGoods(OrderInfo orderInfo) {
+        for (GoodsInfo goodsInfo : orderInfo.getGoods()) {
+            if (goodsDao.deductGoods(goodsInfo) <= 0) {
+                System.out.println("扣减库存失败");
+                throw HttpException.gone("库存不足");
+            }
+        }
+    }
+
 }

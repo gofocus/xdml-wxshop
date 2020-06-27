@@ -1,8 +1,12 @@
 package com.gofocus.wxshop.main.service;
 
+import com.gofocus.wxshop.api.DataStatus;
 import com.gofocus.wxshop.main.controller.ShoppingCartController;
 import com.gofocus.wxshop.main.dao.ShoppingCartDao;
-import com.gofocus.wxshop.main.entity.*;
+import com.gofocus.wxshop.main.entity.AddToShoppingCartItem;
+import com.gofocus.wxshop.main.entity.GoodsWithNumber;
+import com.gofocus.wxshop.main.entity.PaginationResponse;
+import com.gofocus.wxshop.main.entity.ShoppingCartData;
 import com.gofocus.wxshop.main.exception.HttpException;
 import com.gofocus.wxshop.main.generate.*;
 import com.gofocus.wxshop.main.shiro.UserContext;
@@ -52,7 +56,7 @@ public class ShoppingCartService {
     private ShoppingCartData merge(List<ShoppingCartData> goodsOfSameShop) {
         ShoppingCartData shoppingCartData = new ShoppingCartData();
         shoppingCartData.setShop(goodsOfSameShop.get(0).getShop());
-        List<ShoppingCartGoods> goods = goodsOfSameShop.stream()
+        List<GoodsWithNumber> goods = goodsOfSameShop.stream()
                 .map(ShoppingCartData::getGoods)
                 .flatMap(Collection::stream)
                 .collect(toList());

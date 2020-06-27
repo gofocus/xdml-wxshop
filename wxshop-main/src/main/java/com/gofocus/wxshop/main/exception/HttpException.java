@@ -1,5 +1,7 @@
 package com.gofocus.wxshop.main.exception;
 
+import org.springframework.http.HttpStatus;
+
 import static javax.servlet.http.HttpServletResponse.*;
 
 /**
@@ -27,6 +29,10 @@ public class HttpException extends RuntimeException {
 
     public static HttpException badRequest(String message) {
         return new HttpException(SC_BAD_REQUEST, message);
+    }
+
+    public static HttpException gone(String message) {
+        return new HttpException(HttpStatus.GONE.value(), message);
     }
 
     public int getStatusCode() {
