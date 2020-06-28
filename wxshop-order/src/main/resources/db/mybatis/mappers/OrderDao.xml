@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gofocus.wxshop.order.dao.OrderDao">
+
+
+    <select id="getOrders" resultType="com.gofocus.wxshop.api.generate.Order">
+        select * from ORDER_TABLE
+        WHERE USER_ID = #{userId}
+        <if test="status!=null">
+            AND STATUS = #{status}
+        </if>
+        LIMIT #{offset},#{limit}
+    </select>
+</mapper>

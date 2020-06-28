@@ -1,13 +1,17 @@
 package com.gofocus.wxshop.order.orderservice;
 
 import com.gofocus.wxshop.api.DataStatus;
-import com.gofocus.wxshop.api.HttpException;
 import com.gofocus.wxshop.api.data.GoodsInfo;
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.api.data.RpcOrderGoods;
+import com.gofocus.wxshop.api.exception.HttpException;
 import com.gofocus.wxshop.api.generate.Order;
+import com.gofocus.wxshop.api.generate.OrderExample;
 import com.gofocus.wxshop.api.generate.OrderGoodsExample;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
+import com.gofocus.wxshop.api.utils.PageUtil;
+import com.gofocus.wxshop.order.dao.OrderDao;
 import com.gofocus.wxshop.order.dao.OrderGoodsDao;
 import com.gofocus.wxshop.order.generate.OrderGoodsMapper;
 import com.gofocus.wxshop.order.generate.OrderMapper;
@@ -33,11 +37,13 @@ public class OrderRpcServiceImpl implements OrderRpcService {
     private final OrderMapper orderMapper;
     private final OrderGoodsDao orderGoodsDao;
     private final OrderGoodsMapper orderGoodsMapper;
+    private final OrderDao orderDao;
 
-    public OrderRpcServiceImpl(OrderMapper orderMapper, OrderGoodsDao orderGoodsDao, OrderGoodsMapper orderGoodsMapper) {
+    public OrderRpcServiceImpl(OrderMapper orderMapper, OrderGoodsDao orderGoodsDao, OrderGoodsMapper orderGoodsMapper, OrderDao orderDao) {
         this.orderMapper = orderMapper;
         this.orderGoodsDao = orderGoodsDao;
         this.orderGoodsMapper = orderGoodsMapper;
+        this.orderDao = orderDao;
     }
 
     @Override
@@ -52,12 +58,42 @@ public class OrderRpcServiceImpl implements OrderRpcService {
     @Override
     public RpcOrderGoods deleteOrder(long orderId) {
         doDeleteOrder(orderId);
+        return getRpcOrderGoods(orderId);
+    }
+
+    private RpcOrderGoods getRpcOrderGoods(long orderId) {
         Order order = orderMapper.selectByPrimaryKey(orderId);
         if (order == null) {
             throw HttpException.notFound("订单未找到:" + orderId);
         }
         List<GoodsInfo> goodsInfos = getGoodsInfos(orderId);
         return new RpcOrderGoods(order, goodsInfos);
+    }
+
+    @Override
+    public PaginationResponse<RpcOrderGoods> getOrder(int pageNum, int pageSize, String status, Long userId) {
+        OrderExample example = new OrderExample();
+        OrderExample.Criteria criteria = example.createCriteria();
+        if (status == null || "".equals(status)) {
+            criteria.andStatusNotEqualTo(DataStatus.DELETED.getName());
+        } else {
+            criteria.andStatusEqualTo(status);
+        }
+        criteria.andUserIdEqualTo(userId);
+        List<Order> allOrders = orderMapper.selectByExample(example);
+
+        int totalPage = PageUtil.getTotalPage(allOrders.size(), pageSize);
+        pageNum = Math.min(totalPage, pageNum);
+        if (pageNum <= 0) {
+            pageNum = 1;
+        }
+        int offset = (pageNum - 1) * pageSize;
+        List<Order> ordersWithPagination = orderDao.getOrders(offset, pageSize, userId, status);
+
+        List<RpcOrderGoods> rpcOrderGoods = ordersWithPagination.stream()
+                .map(order -> new RpcOrderGoods(order, getGoodsInfos(order.getId())))
+                .collect(toList());
+        return PaginationResponse.pageData(pageNum, pageSize, totalPage, rpcOrderGoods);
     }
 
     private List<GoodsInfo> getGoodsInfos(long orderId) {

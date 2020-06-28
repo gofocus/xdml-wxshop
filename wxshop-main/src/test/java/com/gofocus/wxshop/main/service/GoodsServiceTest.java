@@ -1,6 +1,6 @@
 package com.gofocus.wxshop.main.service;
 
-import com.gofocus.wxshop.api.HttpException;
+import com.gofocus.wxshop.api.exception.HttpException;
 import com.gofocus.wxshop.main.generate.Goods;
 import com.gofocus.wxshop.main.generate.GoodsMapper;
 import com.gofocus.wxshop.main.generate.Shop;

@@ -2,12 +2,13 @@ package com.gofocus.wxshop.main.service;
 
 import com.gofocus.wxshop.api.data.GoodsInfo;
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.api.data.RpcOrderGoods;
+import com.gofocus.wxshop.api.exception.HttpException;
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
 import com.gofocus.wxshop.main.entity.GoodsWithNumber;
 import com.gofocus.wxshop.main.entity.OrderResponse;
-import com.gofocus.wxshop.api.HttpException;
 import com.gofocus.wxshop.main.generate.*;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
@@ -102,10 +103,26 @@ public class OrderService {
         Order order = rpcOrderGoods.getOrder();
         Shop shop = shopMapper.selectByPrimaryKey(order.getShopId());
         //2.goodsWithNumber
-        List<GoodsWithNumber> goodsWithNumbers = rpcOrderGoods.getGoods().stream().map((goodsInfo -> {
+        List<GoodsWithNumber> goodsWithNumbers = getGoodsWithNumbers(rpcOrderGoods);
+        return OrderResponse.of(order, shop, goodsWithNumbers);
+    }
+
+    private List<GoodsWithNumber> getGoodsWithNumbers(RpcOrderGoods rpcOrderGoods) {
+        return rpcOrderGoods.getGoods().stream().map((goodsInfo -> {
             Goods goods = goodsMapper.selectByPrimaryKey(goodsInfo.getId());
             return new GoodsWithNumber(goods, goodsInfo.getNumber());
         })).collect(toList());
-        return OrderResponse.of(order, shop, goodsWithNumbers);
+    }
+
+    public PaginationResponse<OrderResponse> getOrders(int pageNum, int pageSize, String status, Long userId) {
+        PaginationResponse<RpcOrderGoods> rpcOrderGoodsWithPage = orderRpcService.getOrder(pageNum, pageSize, status, userId);
+
+        List<OrderResponse> orderResponses = rpcOrderGoodsWithPage.getData().stream().map(rpcOrderGoods -> {
+            Shop shop = shopMapper.selectByPrimaryKey(rpcOrderGoods.getOrder().getShopId());
+            return OrderResponse.of(rpcOrderGoods.getOrder(), shop, getGoodsWithNumbers(rpcOrderGoods));
+        }).collect(toList());
+
+        return PaginationResponse.pageData(rpcOrderGoodsWithPage.getPageNum(), rpcOrderGoodsWithPage.getPageSize(), rpcOrderGoodsWithPage.getTotalPage(), orderResponses);
+
     }
 }

@@ -2,9 +2,10 @@ package com.gofocus.wxshop.order.generate;
 
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.api.generate.OrderExample;
-import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface OrderMapper {

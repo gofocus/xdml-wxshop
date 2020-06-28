@@ -2,7 +2,7 @@ package com.gofocus.wxshop.main;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.gofocus.wxshop.main.entity.PaginationResponse;
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.generate.Goods;
 import org.junit.jupiter.api.Assertions;

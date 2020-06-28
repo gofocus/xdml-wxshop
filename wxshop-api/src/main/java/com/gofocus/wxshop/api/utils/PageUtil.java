@@ -1,4 +1,4 @@
-package com.gofocus.wxshop.main.utils;
+package com.gofocus.wxshop.api.utils;
 
 /**
  * @Author: GoFocus

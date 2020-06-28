@@ -19,4 +19,13 @@ public enum DataStatus {
         return name().toLowerCase();
     }
 
+    public static boolean includeStatus(String status) {
+        for (DataStatus value : DataStatus.values()) {
+            if (value.getName().equals(status)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

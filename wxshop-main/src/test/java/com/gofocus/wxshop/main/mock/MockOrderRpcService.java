@@ -1,6 +1,7 @@
 package com.gofocus.wxshop.main.mock;
 
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
@@ -27,6 +28,11 @@ public class MockOrderRpcService implements OrderRpcService {
     @Override
     public RpcOrderGoods deleteOrder(long orderId) {
         return orderRpcService.deleteOrder(orderId);
+    }
+
+    @Override
+    public PaginationResponse<RpcOrderGoods> getOrder(int pageNum, int pageSize, String status, Long userId) {
+        return orderRpcService.getOrder(pageNum, pageSize, status, userId);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.gofocus.wxshop.main.service;
 
 import com.gofocus.wxshop.api.DataStatus;
-import com.gofocus.wxshop.main.entity.PaginationResponse;
-import com.gofocus.wxshop.api.HttpException;
+import com.gofocus.wxshop.api.data.PaginationResponse;
+import com.gofocus.wxshop.api.exception.HttpException;
 import com.gofocus.wxshop.main.generate.Shop;
 import com.gofocus.wxshop.main.generate.ShopExample;
 import com.gofocus.wxshop.main.generate.ShopMapper;
@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gofocus.wxshop.main.utils.PageUtil.getTotalPage;
+import static com.gofocus.wxshop.api.utils.PageUtil.getTotalPage;
 
 /**
  * @Author: GoFocus

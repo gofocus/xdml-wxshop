@@ -1,5 +1,6 @@
-package com.gofocus.wxshop.main.entity;
+package com.gofocus.wxshop.api.data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -7,7 +8,7 @@ import java.util.List;
  * @Date: 2020-06-20 15:48
  * @Description:
  */
-public class PaginationResponse<T> {
+public class PaginationResponse<T> implements Serializable {
 
     private Integer pageNum;
     private Integer pageSize;

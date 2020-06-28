@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.gofocus.wxshop.api.DataStatus;
 import com.gofocus.wxshop.api.data.GoodsInfo;
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.PaginationResponse;
+import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.main.entity.GoodsWithNumber;
 import com.gofocus.wxshop.main.entity.OrderResponse;
@@ -23,13 +25,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 /**
  * @Author: GoFocus
@@ -46,10 +48,22 @@ public class OrderIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockOrderRpcService mockOrderRpcService;
+    private Order order;
+    private List<GoodsInfo> goodsInfos;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.initMocks(mockOrderRpcService);
+        this.order = new Order();
+        order.setUpdatedAt(new Date());
+        order.setCreatedAt(new Date());
+        order.setId(1L);
+        order.setAddress("海王星");
+        order.setUserId(1L);
+        order.setTotalPrice(2333L);
+        order.setShopId(1L);
+
+        goodsInfos = Arrays.asList(new GoodsInfo(1L, 5), new GoodsInfo(2L, 5));
 
         lenient().when(mockOrderRpcService.orderRpcService.placeOrder(any(), any())).thenAnswer(invocation -> {
             Order order = invocation.getArgument(1);
@@ -59,19 +73,57 @@ public class OrderIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void deleteOrderSucceed() throws JsonProcessingException {
-        createOrderSucceed();
+    void getOrderFailed4BadParamStatus() throws JsonProcessingException {
+        String cookie = loginAndGetCookie();
+        HttpResponse httpResponse = httpGet("/api/v1/order?pageNum=1&pageSize=2&status=wrongStatus", cookie);
+        assertEquals(HttpStatus.BAD_REQUEST.value(), httpResponse.getCode());
+    }
 
+    @Test
+    void getOrdersSucceed() throws JsonProcessingException {
+        RpcOrderGoods rpcOrderGoods = new RpcOrderGoods();
+        order.setStatus(DataStatus.PENDING.getName());
+        rpcOrderGoods.setOrder(order);
+        rpcOrderGoods.setGoods(goodsInfos);
+        when(mockOrderRpcService.orderRpcService.getOrder(anyInt(), anyInt(), anyString(), anyLong())).thenAnswer(invocation -> new PaginationResponse<>(invocation.getArgument(0), invocation.getArgument(1), 3, Collections.singletonList(rpcOrderGoods)));
+
+        String cookie = loginAndGetCookie();
+        HttpResponse httpResponse = httpGet("/api/v1/order?pageNum=1&pageSize=2&status=pending", cookie);
+
+        PaginationResponse<OrderResponse> paginationResponse = readResponseBody(httpResponse, new TypeReference<PaginationResponse<OrderResponse>>() {
+        });
+
+        List<OrderResponse> orderResponses = paginationResponse.getData();
+        assertEquals(1, paginationResponse.getPageNum());
+        assertEquals(2, paginationResponse.getPageSize());
+        assertEquals(3, paginationResponse.getTotalPage());
+        assertEquals(1L, orderResponses.get(0).getShopId());
+        assertEquals(order.getStatus(), orderResponses.get(0).getStatus());
+        assertEquals(2, orderResponses.get(0).getGoods().size());
+        assertEquals(5, orderResponses.get(0).getGoods().get(0).getNumber());
+        assertEquals(100, orderResponses.get(0).getGoods().get(0).getPrice());
+
+    }
+
+    @Test
+    void deleteOrderSucceed() throws JsonProcessingException {
+        RpcOrderGoods rpcOrderGoods = new RpcOrderGoods();
+        order.setStatus(DataStatus.DELETED.getName());
+        rpcOrderGoods.setOrder(order);
+        rpcOrderGoods.setGoods(goodsInfos);
+        when(mockOrderRpcService.orderRpcService.deleteOrder(anyLong())).thenReturn(rpcOrderGoods);
+
+        createOrderSucceed();
         String cookie = loginAndGetCookie();
         HttpResponse response = httpDelete("/api/v1/order/1", cookie);
         Response<OrderResponse> responseBody = readResponseBody(response, new TypeReference<Response<OrderResponse>>() {
         });
         OrderResponse orderResponse = responseBody.getData();
 
-        assertEquals(1L,orderResponse.getShopId());
+        assertEquals(1L, orderResponse.getShopId());
         assertEquals(2, orderResponse.getGoods().size());
         assertEquals(DataStatus.DELETED.getName(), orderResponse.getStatus());
-        assertEquals(1L,orderResponse.getUserId());
+        assertEquals(1L, orderResponse.getUserId());
     }
 
     @Test
@@ -101,7 +153,10 @@ public class OrderIntegrationTest extends AbstractIntegrationTest {
         String cookie = loginAndGetCookie();
 
         OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setGoods(new ArrayList<>(Arrays.asList(new GoodsInfo(1L, 6), new GoodsInfo(2L, 7))));
+        orderInfo.setGoods(new ArrayList<>(Arrays.asList(
+                new GoodsInfo(1L, 6),
+                new GoodsInfo(2L, 7)
+        )));
 
         HttpResponse response = httpPost("/api/v1/order", orderInfo, cookie);
         Response<OrderResponse> orderResponseResponse = readResponseBody(response, new TypeReference<Response<OrderResponse>>() {

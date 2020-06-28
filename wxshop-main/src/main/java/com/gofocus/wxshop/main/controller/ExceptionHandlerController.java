@@ -1,7 +1,7 @@
 package com.gofocus.wxshop.main.controller;
 
+import com.gofocus.wxshop.api.exception.HttpException;
 import com.gofocus.wxshop.main.entity.Response;
-import com.gofocus.wxshop.api.HttpException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

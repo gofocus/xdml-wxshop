@@ -2,8 +2,12 @@ package com.gofocus.wxshop.main;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.main.controller.ShoppingCartController;
-import com.gofocus.wxshop.main.entity.*;
+import com.gofocus.wxshop.main.entity.AddToShoppingCartItem;
+import com.gofocus.wxshop.main.entity.GoodsWithNumber;
+import com.gofocus.wxshop.main.entity.Response;
+import com.gofocus.wxshop.main.entity.ShoppingCartData;
 import com.gofocus.wxshop.main.generate.Shop;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

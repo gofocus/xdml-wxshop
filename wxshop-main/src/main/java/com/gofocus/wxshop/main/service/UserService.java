@@ -4,7 +4,6 @@ import com.gofocus.wxshop.main.generate.User;
 import com.gofocus.wxshop.main.generate.UserExample;
 import com.gofocus.wxshop.main.generate.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -34,7 +33,7 @@ public class UserService {
             user.setCreatedAt(new Date());
             user.setUpdatedAt(new Date());
             userMapper.insert(user);
-        } catch (DuplicateKeyException e) {
+        } catch (Exception e) {
             getUserByTel(tel);
         }
     }
@@ -50,7 +49,6 @@ public class UserService {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

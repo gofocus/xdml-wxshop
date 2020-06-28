@@ -1,7 +1,7 @@
 package com.gofocus.wxshop.main.controller;
 
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.main.entity.AddToShoppingCartItem;
-import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.entity.ShoppingCartData;
 import com.gofocus.wxshop.main.service.ShoppingCartService;

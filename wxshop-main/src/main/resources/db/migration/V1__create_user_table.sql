@@ -8,6 +8,9 @@ create table USER
     CREATED_AT timestamp,
     UPDATED_AT timestamp
 );
+# ENGINE = InnoDB
+#   DEFAULT CHARSET = utf8mb4
+#   COLLATE = utf8mb4_unicode_ci;
 
 
 INSERT INTO USER(ID, NAME, TEL, AVATAR_URL, ADDRESS)

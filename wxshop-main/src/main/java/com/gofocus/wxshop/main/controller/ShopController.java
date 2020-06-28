@@ -1,6 +1,6 @@
 package com.gofocus.wxshop.main.controller;
 
-import com.gofocus.wxshop.main.entity.PaginationResponse;
+import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.generate.Shop;
 import com.gofocus.wxshop.main.service.ShopService;
