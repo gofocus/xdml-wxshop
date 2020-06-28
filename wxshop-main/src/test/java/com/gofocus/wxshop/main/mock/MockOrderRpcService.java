@@ -1,6 +1,7 @@
 package com.gofocus.wxshop.main.mock;
 
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -24,8 +25,8 @@ public class MockOrderRpcService implements OrderRpcService {
     }
 
     @Override
-    public OrderInfo cancelOrder(String goodsId) {
-        return null;
+    public RpcOrderGoods deleteOrder(long orderId) {
+        return orderRpcService.deleteOrder(orderId);
     }
 
 }

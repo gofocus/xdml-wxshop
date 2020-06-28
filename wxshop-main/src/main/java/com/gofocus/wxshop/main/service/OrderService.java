@@ -2,20 +2,23 @@ package com.gofocus.wxshop.main.service;
 
 import com.gofocus.wxshop.api.data.GoodsInfo;
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
 import com.gofocus.wxshop.main.entity.GoodsWithNumber;
 import com.gofocus.wxshop.main.entity.OrderResponse;
-import com.gofocus.wxshop.main.exception.HttpException;
+import com.gofocus.wxshop.api.HttpException;
 import com.gofocus.wxshop.main.generate.*;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static com.gofocus.wxshop.api.DataStatus.PENDING;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -91,11 +94,18 @@ public class OrderService {
     }
 
 
-    public OrderResponse cancelOrder(String goodsId) {
-
-        orderRpcService.cancelOrder(goodsId);
-
-//        goodsService.addStock()
-        return null;
+    public OrderResponse deleteOrder(long orderId) {
+        // RPC
+        RpcOrderGoods rpcOrderGoods = orderRpcService.deleteOrder(orderId);
+        //组装OrderResponse
+        //1.shop
+        Order order = rpcOrderGoods.getOrder();
+        Shop shop = shopMapper.selectByPrimaryKey(order.getShopId());
+        //2.goodsWithNumber
+        List<GoodsWithNumber> goodsWithNumbers = rpcOrderGoods.getGoods().stream().map((goodsInfo -> {
+            Goods goods = goodsMapper.selectByPrimaryKey(goodsInfo.getId());
+            return new GoodsWithNumber(goods, goodsInfo.getNumber());
+        })).collect(toList());
+        return OrderResponse.of(order, shop, goodsWithNumbers);
     }
 }

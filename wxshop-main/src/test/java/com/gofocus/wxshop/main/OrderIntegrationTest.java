@@ -59,6 +59,22 @@ public class OrderIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void deleteOrderSucceed() throws JsonProcessingException {
+        createOrderSucceed();
+
+        String cookie = loginAndGetCookie();
+        HttpResponse response = httpDelete("/api/v1/order/1", cookie);
+        Response<OrderResponse> responseBody = readResponseBody(response, new TypeReference<Response<OrderResponse>>() {
+        });
+        OrderResponse orderResponse = responseBody.getData();
+
+        assertEquals(1L,orderResponse.getShopId());
+        assertEquals(2, orderResponse.getGoods().size());
+        assertEquals(DataStatus.DELETED.getName(), orderResponse.getStatus());
+        assertEquals(1L,orderResponse.getUserId());
+    }
+
+    @Test
     void createOrderSucceed() throws JsonProcessingException {
         String cookie = loginAndGetCookie();
 
@@ -93,7 +109,7 @@ public class OrderIntegrationTest extends AbstractIntegrationTest {
 
         String message = orderResponseResponse.getMessage();
         Assertions.assertNotEquals("", message);
-        Assertions.assertEquals(HttpStatus.GONE.value(), response.getCode());
+        assertEquals(HttpStatus.GONE.value(), response.getCode());
 
         //测试之前扣减库存失败后是否正确回滚
         createOrderSucceed();

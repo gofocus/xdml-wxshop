@@ -30,8 +30,8 @@ public class OrderController {
     }
 
     @DeleteMapping("{id}")
-    public Response<OrderResponse> cancelOrder(@PathVariable String id) {
-        OrderResponse orderResponse = orderService.cancelOrder(id);
+    public Response<OrderResponse> deleteOrder(@PathVariable("id") long orderId) {
+        OrderResponse orderResponse = orderService.deleteOrder(orderId);
         return Response.success(orderResponse);
     }
 

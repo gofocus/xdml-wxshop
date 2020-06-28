@@ -1,14 +1,24 @@
 package com.gofocus.wxshop.order.orderservice;
 
+import com.gofocus.wxshop.api.DataStatus;
+import com.gofocus.wxshop.api.HttpException;
+import com.gofocus.wxshop.api.data.GoodsInfo;
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.generate.Order;
+import com.gofocus.wxshop.api.generate.OrderGoodsExample;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
 import com.gofocus.wxshop.order.dao.OrderGoodsDao;
+import com.gofocus.wxshop.order.generate.OrderGoodsMapper;
 import com.gofocus.wxshop.order.generate.OrderMapper;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
 import java.util.function.BooleanSupplier;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @Author: GoFocus
@@ -22,10 +32,12 @@ public class OrderRpcServiceImpl implements OrderRpcService {
 
     private final OrderMapper orderMapper;
     private final OrderGoodsDao orderGoodsDao;
+    private final OrderGoodsMapper orderGoodsMapper;
 
-    public OrderRpcServiceImpl(OrderMapper orderMapper, OrderGoodsDao orderGoodsDao) {
+    public OrderRpcServiceImpl(OrderMapper orderMapper, OrderGoodsDao orderGoodsDao, OrderGoodsMapper orderGoodsMapper) {
         this.orderMapper = orderMapper;
         this.orderGoodsDao = orderGoodsDao;
+        this.orderGoodsMapper = orderGoodsMapper;
     }
 
     @Override
@@ -38,8 +50,28 @@ public class OrderRpcServiceImpl implements OrderRpcService {
     }
 
     @Override
-    public OrderInfo cancelOrder(String goodsId) {
-        return null;
+    public RpcOrderGoods deleteOrder(long orderId) {
+        doDeleteOrder(orderId);
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        if (order == null) {
+            throw HttpException.notFound("订单未找到:" + orderId);
+        }
+        List<GoodsInfo> goodsInfos = getGoodsInfos(orderId);
+        return new RpcOrderGoods(order, goodsInfos);
+    }
+
+    private List<GoodsInfo> getGoodsInfos(long orderId) {
+        OrderGoodsExample example = new OrderGoodsExample();
+        example.createCriteria().andOrderIdEqualTo(orderId);
+        return orderGoodsMapper.selectByExample(example).stream().map(orderGood -> new GoodsInfo(orderGood.getGoodsId(), Math.toIntExact(orderGood.getNumber()))).collect(toList());
+    }
+
+    private void doDeleteOrder(long orderId) {
+        Order order = new Order();
+        order.setId(orderId);
+        order.setUpdatedAt(new Date());
+        order.setStatus(DataStatus.DELETED.getName());
+        orderMapper.updateByPrimaryKeySelective(order);
     }
 
     private void verifyOrderParams(Order order) {

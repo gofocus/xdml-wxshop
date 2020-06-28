@@ -7,7 +7,7 @@ import com.gofocus.wxshop.main.entity.AddToShoppingCartItem;
 import com.gofocus.wxshop.main.entity.GoodsWithNumber;
 import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.ShoppingCartData;
-import com.gofocus.wxshop.main.exception.HttpException;
+import com.gofocus.wxshop.api.HttpException;
 import com.gofocus.wxshop.main.generate.*;
 import com.gofocus.wxshop.main.shiro.UserContext;
 import com.gofocus.wxshop.main.utils.PageUtil;

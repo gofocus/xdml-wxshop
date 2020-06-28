@@ -1,4 +1,4 @@
-package com.gofocus.wxshop.main.exception;
+package com.gofocus.wxshop.api;
 
 import org.springframework.http.HttpStatus;
 

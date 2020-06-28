@@ -1,6 +1,7 @@
 package com.gofocus.wxshop.api.rpc;
 
 import com.gofocus.wxshop.api.data.OrderInfo;
+import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.generate.Order;
 
 /**
@@ -13,5 +14,5 @@ public interface OrderRpcService {
 
     Order placeOrder(OrderInfo orderInfo, Order order);
 
-    OrderInfo cancelOrder(String goodsId);
+    RpcOrderGoods deleteOrder(long goodsId);
 }

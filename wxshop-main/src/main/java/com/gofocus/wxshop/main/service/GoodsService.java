@@ -5,7 +5,7 @@ import com.gofocus.wxshop.api.data.GoodsInfo;
 import com.gofocus.wxshop.api.data.OrderInfo;
 import com.gofocus.wxshop.main.dao.GoodsDao;
 import com.gofocus.wxshop.main.entity.PaginationResponse;
-import com.gofocus.wxshop.main.exception.HttpException;
+import com.gofocus.wxshop.api.HttpException;
 import com.gofocus.wxshop.main.generate.*;
 import com.gofocus.wxshop.main.shiro.UserContext;
 import org.apache.ibatis.session.SqlSessionFactory;
