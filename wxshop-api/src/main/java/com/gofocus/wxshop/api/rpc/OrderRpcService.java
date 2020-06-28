@@ -13,4 +13,5 @@ public interface OrderRpcService {
 
     Order placeOrder(OrderInfo orderInfo, Order order);
 
+    OrderInfo cancelOrder(String goodsId);
 }

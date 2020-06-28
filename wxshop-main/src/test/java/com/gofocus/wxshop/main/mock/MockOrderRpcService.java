@@ -23,4 +23,9 @@ public class MockOrderRpcService implements OrderRpcService {
         return orderRpcService.placeOrder(orderInfo, order);
     }
 
+    @Override
+    public OrderInfo cancelOrder(String goodsId) {
+        return null;
+    }
+
 }

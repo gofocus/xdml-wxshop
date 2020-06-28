@@ -5,9 +5,9 @@
     <insert id="insertOrderGoods" parameterType="com.gofocus.wxshop.api.data.OrderInfo">
         insert into ORDER_GOODS (ORDER_ID, GOODS_ID, NUMBER)
         values
-        <foreach item="item" collection="list"
+        <foreach item="item" collection="goods"
                  separator=",">
-            (#{orderId}, #{item.id}, {#item.number})
+            (#{orderId}, #{item.id}, #{item.number})
         </foreach>
     </insert>
 

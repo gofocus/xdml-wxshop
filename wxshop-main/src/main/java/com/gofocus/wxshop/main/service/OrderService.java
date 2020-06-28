@@ -91,4 +91,11 @@ public class OrderService {
     }
 
 
+    public OrderResponse cancelOrder(String goodsId) {
+
+        orderRpcService.cancelOrder(goodsId);
+
+//        goodsService.addStock()
+        return null;
+    }
 }

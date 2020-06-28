@@ -5,10 +5,7 @@ import com.gofocus.wxshop.main.entity.OrderResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.service.OrderService;
 import com.gofocus.wxshop.main.shiro.UserContext;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: GoFocus
@@ -29,6 +26,12 @@ public class OrderController {
     @PostMapping
     public Response<OrderResponse> createOrder(@RequestBody OrderInfo orderInfo) {
         OrderResponse orderResponse = orderService.placeOrder(orderInfo, UserContext.getCurrentUser().getId());
+        return Response.success(orderResponse);
+    }
+
+    @DeleteMapping("{id}")
+    public Response<OrderResponse> cancelOrder(@PathVariable String id) {
+        OrderResponse orderResponse = orderService.cancelOrder(id);
         return Response.success(orderResponse);
     }
 

@@ -6,6 +6,7 @@ import com.gofocus.wxshop.api.rpc.OrderRpcService;
 import com.gofocus.wxshop.order.dao.OrderGoodsDao;
 import com.gofocus.wxshop.order.generate.OrderMapper;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.stereotype.Service;
 
 import java.util.function.BooleanSupplier;
 
@@ -15,6 +16,7 @@ import java.util.function.BooleanSupplier;
  * @Description:
  */
 
+@Service
 @DubboService(version = "${wxshop.orderservice.version}")
 public class OrderRpcServiceImpl implements OrderRpcService {
 
@@ -30,8 +32,14 @@ public class OrderRpcServiceImpl implements OrderRpcService {
     public Order placeOrder(OrderInfo orderInfo, Order order) {
         verifyOrderParams(order);
         orderMapper.insertSelective(order);
+        orderInfo.setOrderId(order.getId());
         orderGoodsDao.insertOrderGoods(orderInfo);
         return order;
+    }
+
+    @Override
+    public OrderInfo cancelOrder(String goodsId) {
+        return null;
     }
 
     private void verifyOrderParams(Order order) {
