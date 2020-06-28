@@ -4,7 +4,6 @@ import com.gofocus.wxshop.main.entity.AddToShoppingCartItem;
 import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.entity.ShoppingCartData;
-import com.gofocus.wxshop.main.exception.HttpException;
 import com.gofocus.wxshop.main.service.ShoppingCartService;
 import com.gofocus.wxshop.main.shiro.UserContext;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +28,9 @@ public class ShoppingCartController {
 
     @PostMapping
     public Response<ShoppingCartData> addToShoppingCart(@RequestBody AddToShoppingCartRequest addToShoppingCartRequest) {
-        try {
-            Long userId = UserContext.getCurrentUser().getId();
-            ShoppingCartData shoppingCartData = shoppingCartService.addToShoppingCart(addToShoppingCartRequest, userId);
-            return Response.success(shoppingCartData);
-        } catch (HttpException e) {
-            return Response.failure(e.getMessage());
-        }
+        Long userId = UserContext.getCurrentUser().getId();
+        ShoppingCartData shoppingCartData = shoppingCartService.addToShoppingCart(addToShoppingCartRequest, userId);
+        return Response.success(shoppingCartData);
     }
 
     @GetMapping
@@ -51,13 +46,9 @@ public class ShoppingCartController {
 
     @DeleteMapping("/{goodsId}")
     public Response<ShoppingCartData> deleteGoodsInShoppingCart(@PathVariable("goodsId") Long goodsId) {
-        try {
-            Long userId = UserContext.getCurrentUser().getId();
-            ShoppingCartData shoppingCartData = shoppingCartService.deleteGoods(goodsId, userId);
-            return Response.success(shoppingCartData);
-        } catch (HttpException e) {
-            return Response.failure(e.getMessage());
-        }
+        Long userId = UserContext.getCurrentUser().getId();
+        ShoppingCartData shoppingCartData = shoppingCartService.deleteGoods(goodsId, userId);
+        return Response.success(shoppingCartData);
     }
 
     public static class AddToShoppingCartRequest {

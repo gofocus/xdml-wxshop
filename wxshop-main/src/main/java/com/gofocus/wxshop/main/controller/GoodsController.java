@@ -3,7 +3,6 @@ package com.gofocus.wxshop.main.controller;
 import com.gofocus.wxshop.api.DataStatus;
 import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
-import com.gofocus.wxshop.main.exception.HttpException;
 import com.gofocus.wxshop.main.generate.Goods;
 import com.gofocus.wxshop.main.service.GoodsService;
 import org.springframework.web.bind.annotation.*;
@@ -51,12 +50,7 @@ public class GoodsController {
 
     @DeleteMapping("/goods/{id}")
     public Response<Goods> deleteGoods(@PathVariable("id") Long goodsId, HttpServletResponse response) {
-        try {
-            return Response.success(goodsService.deleteGoodsById(goodsId));
-        } catch (HttpException e) {
-            response.setStatus(e.getStatusCode());
-            return Response.failure(e.getMessage());
-        }
+        return Response.success(goodsService.deleteGoodsById(goodsId));
     }
 
     @GetMapping("/goods")
@@ -69,13 +63,7 @@ public class GoodsController {
 
     @PatchMapping("/goods/{id}")
     public Response<Goods> updateGoods(@PathVariable("id") Long goodsId,
-                                       @RequestBody Goods goods,
-                                       HttpServletResponse response) {
-        try {
-            return Response.success(goodsService.updateGoods(goodsId, goods));
-        } catch (HttpException e) {
-            response.setStatus(e.getStatusCode());
-            return Response.failure(e.getMessage());
-        }
+                                       @RequestBody Goods goods) {
+        return Response.success(goodsService.updateGoods(goodsId, goods));
     }
 }

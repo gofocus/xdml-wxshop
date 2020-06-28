@@ -2,12 +2,9 @@ package com.gofocus.wxshop.main.controller;
 
 import com.gofocus.wxshop.main.entity.PaginationResponse;
 import com.gofocus.wxshop.main.entity.Response;
-import com.gofocus.wxshop.main.exception.HttpException;
 import com.gofocus.wxshop.main.generate.Shop;
 import com.gofocus.wxshop.main.service.ShopService;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Author: GoFocus
@@ -31,45 +28,27 @@ public class ShopController {
                                                        @RequestParam("pageSize") Integer pageSize
     ) {
         PaginationResponse<Shop> shopsWithPagination;
-        try {
-            shopsWithPagination = shopService.getShopsWithPagination(pageNum, pageSize);
-            return Response.success(shopsWithPagination);
-        } catch (HttpException e) {
-            return Response.failure(e.getMessage());
-        }
+        shopsWithPagination = shopService.getShopsWithPagination(pageNum, pageSize);
+        return Response.success(shopsWithPagination);
     }
 
     @PostMapping("/shop")
     public Response<Shop> createShop(@RequestBody Shop shop) {
-        try {
-            Shop shopCreated = shopService.createShop(shop);
-            return Response.success(shopCreated);
-        } catch (HttpException e) {
-            return Response.failure(e.getMessage());
-        }
+        Shop shopCreated = shopService.createShop(shop);
+        return Response.success(shopCreated);
     }
 
     @PatchMapping("/shop/{id}")
-    public Response<Shop> updateShop(@PathVariable("id") Long shopId, @RequestBody Shop shop, HttpServletResponse response) {
-        try {
-            shop.setId(shopId);
-            Shop updatedShop = shopService.updateShop(shop);
-            return Response.success(updatedShop);
-        } catch (HttpException e) {
-            response.setStatus(e.getStatusCode());
-            return Response.failure(e.getMessage());
-        }
+    public Response<Shop> updateShop(@PathVariable("id") Long shopId, @RequestBody Shop shop) {
+        shop.setId(shopId);
+        Shop updatedShop = shopService.updateShop(shop);
+        return Response.success(updatedShop);
     }
 
     @DeleteMapping("/shop/{id}")
-    public Response<Shop> deleteShop(@PathVariable("id") Long shopId, @RequestBody Shop shop, HttpServletResponse response) {
-        try {
-            shop.setId(shopId);
-            Shop shopDeleted = shopService.deleteShop(shop);
-            return Response.success(shopDeleted);
-        } catch (HttpException e) {
-            response.setStatus(e.getStatusCode());
-            return Response.failure(e.getMessage());
-        }
+    public Response<Shop> deleteShop(@PathVariable("id") Long shopId, @RequestBody Shop shop) {
+        shop.setId(shopId);
+        Shop shopDeleted = shopService.deleteShop(shop);
+        return Response.success(shopDeleted);
     }
 }
