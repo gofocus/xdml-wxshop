@@ -4,6 +4,7 @@ import com.gofocus.wxshop.api.DataStatus;
 import com.gofocus.wxshop.api.data.OrderInfo;
 import com.gofocus.wxshop.api.data.PaginationResponse;
 import com.gofocus.wxshop.api.exception.HttpException;
+import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.main.entity.OrderResponse;
 import com.gofocus.wxshop.main.entity.Response;
 import com.gofocus.wxshop.main.service.OrderService;
@@ -32,13 +33,13 @@ public class OrderController {
         return Response.success(orderResponse);
     }
 
-    @DeleteMapping("{id}")
-    public Response<OrderResponse> deleteOrder(@PathVariable("id") long orderId) {
+    @DeleteMapping("{orderId}")
+    public Response<OrderResponse> deleteOrder(@PathVariable("orderId") long orderId) {
         OrderResponse orderResponse = orderService.deleteOrder(orderId);
         return Response.success(orderResponse);
     }
 
-    @GetMapping()
+    @GetMapping
     public PaginationResponse<OrderResponse> getOrder(@RequestParam("pageNum") int pageNum,
                                                       @RequestParam("pageSize") int pageSize,
                                                       @RequestParam(value = "status", required = false) String status
@@ -50,4 +51,11 @@ public class OrderController {
         return orderService.getOrders(pageNum, pageSize, status, UserContext.getCurrentUser().getId());
     }
 
+    @PatchMapping("{orderId}")
+    public Response<OrderResponse> updateOrder(@PathVariable("orderId") long orderId,
+                                               @RequestBody Order order) {
+        order.setId(orderId);
+        OrderResponse orderResponse = orderService.updateOrder(order, UserContext.getCurrentUser().getId());
+        return Response.success(orderResponse);
+    }
 }

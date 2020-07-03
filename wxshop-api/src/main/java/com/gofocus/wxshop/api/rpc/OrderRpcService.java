@@ -18,4 +18,6 @@ public interface OrderRpcService {
     RpcOrderGoods deleteOrder(long goodsId);
 
     PaginationResponse<RpcOrderGoods> getOrder(int pageNum, int pageSize, String status, Long userId);
+
+    RpcOrderGoods updateOrder(Order order, Long userId);
 }

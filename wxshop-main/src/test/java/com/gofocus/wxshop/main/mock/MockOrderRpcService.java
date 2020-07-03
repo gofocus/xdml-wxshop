@@ -35,4 +35,9 @@ public class MockOrderRpcService implements OrderRpcService {
         return orderRpcService.getOrder(pageNum, pageSize, status, userId);
     }
 
+    @Override
+    public RpcOrderGoods updateOrder(Order order, Long userId) {
+        return orderRpcService.updateOrder(order, userId);
+    }
+
 }

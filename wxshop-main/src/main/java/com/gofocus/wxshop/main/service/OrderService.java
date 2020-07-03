@@ -125,4 +125,12 @@ public class OrderService {
         return PaginationResponse.pageData(rpcOrderGoodsWithPage.getPageNum(), rpcOrderGoodsWithPage.getPageSize(), rpcOrderGoodsWithPage.getTotalPage(), orderResponses);
 
     }
+
+    public OrderResponse updateOrder(Order order, Long userId) {
+        RpcOrderGoods rpcOrderGoods = orderRpcService.updateOrder(order, userId);
+        List<GoodsWithNumber> goodsWithNumbers = getGoodsWithNumbers(rpcOrderGoods);
+        Order updatedOrder = rpcOrderGoods.getOrder();
+        Shop shop = shopMapper.selectByPrimaryKey(updatedOrder.getShopId());
+        return OrderResponse.of(updatedOrder, shop, goodsWithNumbers);
+    }
 }

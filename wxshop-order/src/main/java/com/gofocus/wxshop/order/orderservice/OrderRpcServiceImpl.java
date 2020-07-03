@@ -8,6 +8,7 @@ import com.gofocus.wxshop.api.data.RpcOrderGoods;
 import com.gofocus.wxshop.api.exception.HttpException;
 import com.gofocus.wxshop.api.generate.Order;
 import com.gofocus.wxshop.api.generate.OrderExample;
+import com.gofocus.wxshop.api.generate.OrderGoods;
 import com.gofocus.wxshop.api.generate.OrderGoodsExample;
 import com.gofocus.wxshop.api.rpc.OrderRpcService;
 import com.gofocus.wxshop.api.utils.PageUtil;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -66,7 +69,7 @@ public class OrderRpcServiceImpl implements OrderRpcService {
         if (order == null) {
             throw HttpException.notFound("订单未找到:" + orderId);
         }
-        List<GoodsInfo> goodsInfos = getGoodsInfos(orderId);
+        List<GoodsInfo> goodsInfos = getGoodsInfo(orderId);
         return new RpcOrderGoods(order, goodsInfos);
     }
 
@@ -74,32 +77,96 @@ public class OrderRpcServiceImpl implements OrderRpcService {
     public PaginationResponse<RpcOrderGoods> getOrder(int pageNum, int pageSize, String status, Long userId) {
         OrderExample example = new OrderExample();
         OrderExample.Criteria criteria = example.createCriteria();
+        criteriaAndStatus(status, criteria);
+        criteria.andUserIdEqualTo(userId);
+        int totalPage = PageUtil.getTotalPage((int) orderMapper.countByExample(example), pageSize);
+
+        pageNum = Math.min(totalPage, pageNum);
+        if (pageNum <= 0) {
+            pageNum = 1;
+        }
+        example.setLimit(pageSize);
+        example.setOffset((pageNum - 1) * pageSize);
+        List<Order> orders = orderMapper.selectByExample(example);
+
+        List<OrderGoods> orderGoodsList = getOrderGoodsList(orders);
+        Map<Long, List<OrderGoods>> id2OrderGoodsList = getId2OrderGoodsList(orderGoodsList);
+
+        List<RpcOrderGoods> rpcOrderGoodsList = orders.stream()
+                .map(order -> getRpcOrderGoods(order, id2OrderGoodsList))
+                .collect(toList());
+
+        return PaginationResponse.pageData(pageNum, pageSize, totalPage, rpcOrderGoodsList);
+    }
+
+    @Override
+    public RpcOrderGoods updateOrder(Order order, Long userId) {
+        Order orderInDb = getOrderByOrderId(order.getId(), userId);
+        String status = order.getStatus();
+        if (status != null && DataStatus.includeStatus(status)) {
+            orderInDb.setStatus(status);
+        }
+        orderInDb.setUpdatedAt(new Date());
+        orderInDb.setExpressCompany(order.getExpressCompany());
+        orderInDb.setExpressId(order.getExpressId());
+        orderMapper.updateByPrimaryKeySelective(orderInDb);
+
+        List<GoodsInfo> goodsInfo = getGoodsInfo(order.getId());
+        return new RpcOrderGoods(order, goodsInfo);
+    }
+
+    private Order getOrderByOrderId(long orderId, Long userId) {
+        Order order = orderMapper.selectByPrimaryKey(orderId);
+        if (order == null) {
+            throw HttpException.notFound("订单未找到：" + orderId);
+        }
+        if (!order.getUserId().equals(userId)) {
+            throw HttpException.forbidden("这是别人的订单");
+        }
+        return order;
+    }
+
+    private RpcOrderGoods getRpcOrderGoods(Order order, Map<Long, List<OrderGoods>> id2OrderGoodsList) {
+        List<OrderGoods> orderGoods = id2OrderGoodsList.get(order.getId());
+        List<GoodsInfo> goodsInfos = getGoodsInfo(orderGoods);
+        return new RpcOrderGoods(order, goodsInfos);
+    }
+
+    private Map<Long, List<OrderGoods>> getId2OrderGoodsList(List<OrderGoods> orderGoodsList) {
+        return orderGoodsList.stream().collect(Collectors.groupingBy(OrderGoods::getOrderId, toList()));
+    }
+
+    private List<GoodsInfo> getGoodsInfo(List<OrderGoods> orderGoodsList) {
+        return orderGoodsList.stream().map(orderGoods -> {
+            Long goodsId = orderGoods.getGoodsId();
+            Long goodsNumber = orderGoods.getNumber();
+            return new GoodsInfo(goodsId, Math.toIntExact(goodsNumber));
+        }).collect(toList());
+    }
+
+    private List<OrderGoods> getOrderGoodsList(List<Order> orders) {
+        List<Long> orderIds = orders.stream().map(Order::getId).collect(toList());
+        OrderGoodsExample example = new OrderGoodsExample();
+        example.createCriteria()
+                .andOrderIdIn(orderIds);
+        return orderGoodsMapper.selectByExample(example);
+    }
+
+    private void criteriaAndStatus(String status, OrderExample.Criteria criteria) {
         if (status == null || "".equals(status)) {
             criteria.andStatusNotEqualTo(DataStatus.DELETED.getName());
         } else {
             criteria.andStatusEqualTo(status);
         }
-        criteria.andUserIdEqualTo(userId);
-        List<Order> allOrders = orderMapper.selectByExample(example);
-
-        int totalPage = PageUtil.getTotalPage(allOrders.size(), pageSize);
-        pageNum = Math.min(totalPage, pageNum);
-        if (pageNum <= 0) {
-            pageNum = 1;
-        }
-        int offset = (pageNum - 1) * pageSize;
-        List<Order> ordersWithPagination = orderDao.getOrders(offset, pageSize, userId, status);
-
-        List<RpcOrderGoods> rpcOrderGoods = ordersWithPagination.stream()
-                .map(order -> new RpcOrderGoods(order, getGoodsInfos(order.getId())))
-                .collect(toList());
-        return PaginationResponse.pageData(pageNum, pageSize, totalPage, rpcOrderGoods);
     }
 
-    private List<GoodsInfo> getGoodsInfos(long orderId) {
+    private List<GoodsInfo> getGoodsInfo(long orderId) {
         OrderGoodsExample example = new OrderGoodsExample();
         example.createCriteria().andOrderIdEqualTo(orderId);
-        return orderGoodsMapper.selectByExample(example).stream().map(orderGood -> new GoodsInfo(orderGood.getGoodsId(), Math.toIntExact(orderGood.getNumber()))).collect(toList());
+        return orderGoodsMapper.selectByExample(example)
+                .stream()
+                .map(orderGood -> new GoodsInfo(orderGood.getGoodsId(), Math.toIntExact(orderGood.getNumber())))
+                .collect(toList());
     }
 
     private void doDeleteOrder(long orderId) {

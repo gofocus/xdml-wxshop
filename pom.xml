@@ -26,6 +26,10 @@
         <dubbo.version>2.7.7</dubbo.version>
     </properties>
 
+    <dependencies>
+
+    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

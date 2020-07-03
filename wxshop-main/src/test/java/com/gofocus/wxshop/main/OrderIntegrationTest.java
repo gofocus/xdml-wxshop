@@ -90,13 +90,13 @@ public class OrderIntegrationTest extends AbstractIntegrationTest {
         String cookie = loginAndGetCookie();
         HttpResponse httpResponse = httpGet("/api/v1/order?pageNum=1&pageSize=2&status=pending", cookie);
 
-        PaginationResponse<OrderResponse> paginationResponse = readResponseBody(httpResponse, new TypeReference<PaginationResponse<OrderResponse>>() {
+        PaginationResponse<OrderResponse> response = readResponseBody(httpResponse, new TypeReference<PaginationResponse<OrderResponse>>() {
         });
 
-        List<OrderResponse> orderResponses = paginationResponse.getData();
-        assertEquals(1, paginationResponse.getPageNum());
-        assertEquals(2, paginationResponse.getPageSize());
-        assertEquals(3, paginationResponse.getTotalPage());
+        List<OrderResponse> orderResponses = response.getData();
+        assertEquals(1, response.getPageNum());
+        assertEquals(2, response.getPageSize());
+        assertEquals(3, response.getTotalPage());
         assertEquals(1L, orderResponses.get(0).getShopId());
         assertEquals(order.getStatus(), orderResponses.get(0).getStatus());
         assertEquals(2, orderResponses.get(0).getGoods().size());
